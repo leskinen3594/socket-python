@@ -1,14 +1,10 @@
-def find_activity(activities: list):
-    wordlist = ['laying', 'sit_on_the_floor']
-    n = 0
+wordlist = ['laying', 'sit_on_the_floor']
 
-    for act in activities:
-        if act in wordlist:
-            n += 1
-            print(n)
-            if n >= 7:
-                print("\n [Send!] \n")
-                return True
+def find_activity(activities: list) -> int:
+    count_laying = activities.count('laying')
+    count_sit = activities.count('sit_on_the_floor')
+
+    return count_laying, count_sit
 
 
 import time
@@ -19,24 +15,34 @@ word_stack = list()
 success = False
 
 while True:
-    msg = random.choice(['laying', 'a', 'b', 'c'])
+    msg = random.choice(['laying', 'sit_on_the_floor'])
 
     q.append(msg)
 
     if len(q) == 10:
         word_stack = q.copy()
-        success = find_activity(word_stack)
         q.clear()
 
-    print("q = ", q)
-    print("stack = ", word_stack)
-    
-    if success:
+    print(f"q = {q}")
+    print(f"stack = {word_stack} \n")
+
+    laying, sit_on_the_floor = find_activity(word_stack)
+
+    if laying >= 7 or sit_on_the_floor >= 7:
+        print(f"\n laying = {laying}")
+        print(f" sit on the floor = {sit_on_the_floor} \n")
+
+        print("\n [Send!] \n")
         word_stack.clear()
-        print("stack clear = ", word_stack)
+        laying = 0
+        sit_on_the_floor = 0
     else:
         if len(word_stack) == 10:
+            print(f"\n laying = {laying}")
+            print(f" sit on the floor = {sit_on_the_floor} \n")
+
             word_stack.clear()
-            print("stack clear = ", word_stack)
+            laying = 0
+            sit_on_the_floor = 0
 
     time.sleep(1)
