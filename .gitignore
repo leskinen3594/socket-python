@@ -3,7 +3,5 @@ __pycache__/
 Pipfile.lock
 
 # unuse file or test script
-class.py
 line_notify.py
-my_queue.py
 generate_keys_Uncle_engineer_Web_hacking.py
