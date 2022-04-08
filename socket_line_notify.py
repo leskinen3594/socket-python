@@ -34,9 +34,15 @@ commands = dict(
 )
 
 client_list = list()	# Client List
+message_stack = list()
 
 wordlist = ['laying', 'sit_on_the_floor']
 
+def activity_counter(activities: list) -> int:
+    count_laying = activities.count('laying')
+    count_sit = activities.count('sit_on_the_floor')
+
+    return count_laying, count_sit
 
 def client_handler(client, addr):
 	while True:
@@ -54,6 +60,37 @@ def client_handler(client, addr):
 		msg = data.decode('utf-8')
 		print(f"\n [Message from {addr[0]}] : {msg} \n")
 
+		# Add message to list for count activity
+		if msg in wordlist:
+			message_stack.append(msg)
+
+		activity_list = list()
+		if len(message_stack) == 10:
+			activity_list = message_stack.copy()
+			message_stack.clear()
+
+		laying, sit_on_the_floor = activity_counter(activity_list)
+
+		# Send to line or Remove all elements
+		if laying >= 7 or sit_on_the_floor >= 7:
+			# Send message to line
+			if laying > sit_on_the_floor:
+				_ = lineNotify(str(addr[0]) + " : laying")
+				print("\n [Line notify!] \n")
+			else:
+				_ = lineNotify(str(addr[0]) + " : sit on the floor")
+				print("\n [Line notify!] \n")
+
+			activity_list.clear()
+			laying = 0
+			sit_on_the_floor = 0
+		else:
+			if len(activity_list) == 10:
+				# Reset activity count
+				activity_list.clear()
+				laying = 0
+				sit_on_the_floor = 0
+
 		# Ping Pong
 		ping_broadcast = "!Ahoy"
 		ping_server = "!ping"
@@ -64,13 +101,8 @@ def client_handler(client, addr):
 				c.sendall(pong.encode('utf-8'))
 
 		if msg == ping_server:
-			client.send(pong.encode('utf-8'))
+			client.send(bytes("pong!", encoding='utf-8'))
 
-		# Send message to Line
-		if msg in wordlist:
-			lineNotify(msg)
-			# print(response)
-			
 	# Close conection
 	client.close()
 

@@ -10,38 +10,37 @@ def find_activity(activities: list) -> int:
 import time
 import random
 
-q = list()
-word_stack = list()
-success = False
+message_stack = list()
+activity_list = list()
 
 while True:
-    msg = random.choice(['laying', 'sit_on_the_floor'])
+    msg = random.choice(['laying', 'sit_on_the_floor', 'a', 'b', 'c'])
 
-    q.append(msg)
+    message_stack.append(msg)
 
-    if len(q) == 10:
-        word_stack = q.copy()
-        q.clear()
+    if len(message_stack) == 10:
+        activity_list = message_stack.copy()
+        message_stack.clear()
 
-    print(f"q = {q}")
-    print(f"stack = {word_stack} \n")
+    print(f"message_stack = {message_stack}")
+    print(f"stack = {activity_list} \n")
 
-    laying, sit_on_the_floor = find_activity(word_stack)
+    laying, sit_on_the_floor = find_activity(activity_list)
 
     if laying >= 7 or sit_on_the_floor >= 7:
         print(f"\n laying = {laying}")
         print(f" sit on the floor = {sit_on_the_floor} \n")
 
         print("\n [Send!] \n")
-        word_stack.clear()
+        activity_list.clear()
         laying = 0
         sit_on_the_floor = 0
     else:
-        if len(word_stack) == 10:
+        if len(activity_list) == 10:
             print(f"\n laying = {laying}")
             print(f" sit on the floor = {sit_on_the_floor} \n")
 
-            word_stack.clear()
+            activity_list.clear()
             laying = 0
             sit_on_the_floor = 0
 
