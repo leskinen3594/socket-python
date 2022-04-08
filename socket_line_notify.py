@@ -65,21 +65,25 @@ def client_handler(client, addr):
 			message_stack.append(msg)
 
 		activity_list = list()
-		if len(message_stack) == 10:
+		if len(message_stack) == 9_000:
 			activity_list = message_stack.copy()
 			message_stack.clear()
 
 		laying, sit_on_the_floor = activity_counter(activity_list)
 
 		# Send to line or Remove all elements
-		if laying >= 7 or sit_on_the_floor >= 7:
+		if laying >= 5_400 or sit_on_the_floor >= 5_400:
 			# Send message to line
 			if laying > sit_on_the_floor:
-				_ = lineNotify(str(addr[0]) + " : laying")
-				print("\n [Line notify!] \n")
+				# _ = lineNotify(str(addr[0]) + " : laying")
+				t1 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : laying",))
+				t1.start()
+				print("\n [Line notify!] : laying \n")
 			else:
-				_ = lineNotify(str(addr[0]) + " : sit on the floor")
-				print("\n [Line notify!] \n")
+				# _ = lineNotify(str(addr[0]) + " : sit on the floor")
+				t2 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : sit on the floor",))
+				t2.start()
+				print("\n [Line notify!] : sit on the floor \n")
 
 			activity_list.clear()
 			laying = 0

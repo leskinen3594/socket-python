@@ -66,11 +66,17 @@ except socket.error:
 task = threading.Thread(target=server_handler, args=(client,))
 task.start()
 
+import random
+import time
+
 try:
 	while True:
-		message = input("[Send message] : ")
+		# message = input("[Send message] : ")
+		message = random.choice(['laying', 'sit_on_the_floor'])
 
 		success = sender(message)
+
+		time.sleep(.00002)	# 0.02 ms
 
 		if not success:
 			print("\n [FAILED!] Cannot send message \n")
