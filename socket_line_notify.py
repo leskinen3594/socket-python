@@ -78,18 +78,20 @@ def client_handler(client, addr):
 				# _ = lineNotify(str(addr[0]) + " : laying")
 				t1 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : laying",))
 				t1.start()
-				print("\n [Line notify!] : laying \n")
+
+				client.send(bytes("Send to Line Success!", encoding='utf-8'))
 			else:
 				# _ = lineNotify(str(addr[0]) + " : sit on the floor")
 				t2 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : sit on the floor",))
 				t2.start()
-				print("\n [Line notify!] : sit on the floor \n")
+
+				client.send(bytes("Send to Line Success!", encoding='utf-8'))
 
 			activity_list.clear()
 			laying = 0
 			sit_on_the_floor = 0
 		else:
-			if len(activity_list) == 10:
+			if len(activity_list) == 9_000:
 				# Reset activity count
 				activity_list.clear()
 				laying = 0
