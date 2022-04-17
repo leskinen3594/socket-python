@@ -1,5 +1,5 @@
 #################################################################
-#						Line Notify								#
+#			Line Notify                             #
 #################################################################
 
 def lineNotify(message):
@@ -19,7 +19,7 @@ def _lineNotify(payload, file=None):
 
 
 #################################################################
-#						SOCKET SERVER							#
+#	            SOCKET SERVER				#
 #################################################################
 
 import socket
@@ -27,7 +27,7 @@ import threading
 from my_queue import MyQueue
 
 # SERVER_IP = socket.gethostbyname(socket.gethostname())
-SERVER_IP = '192.168.1.40'
+SERVER_IP = '0.0.0.0'
 PORT = 5050
 BUFFER_SIZE = 16
 
@@ -72,8 +72,8 @@ def client_handler(client, addr):
 			activity_list = q_message.push_q(msg)
 			event_count += 1
 
-		print(f"\n [Debug 1] : queue length = {len(activity_list)} \n")
-		print(f"\n [Debug 2] : event count = {event_count} \n")
+		# print(f"\n [Debug 1] : queue length = {len(activity_list)} \n")
+		# print(f"\n [Debug 2] : event count = {event_count} \n")
 
 		if event_count == 35:	# 5 seconds
 			laying, sit_on_the_floor = activity_counter(activity_list)
