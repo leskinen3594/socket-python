@@ -7,6 +7,7 @@ def lineNotify(message):
 
 	return _lineNotify(payload)
 
+
 def _lineNotify(payload, file=None):
 	import requests
 
@@ -23,28 +24,29 @@ def _lineNotify(payload, file=None):
 
 import socket
 import threading
+from my_queue import MyQueue
 
 # SERVER_IP = socket.gethostbyname(socket.gethostname())
 SERVER_IP = '192.168.1.40'
 PORT = 5050
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 16
 
 commands = dict(
 	Disconnect = ("!DISCONNECT", "!Disconnect", "!disconnect"),
 )
 
 client_list = list()	# Client List
-message_stack = list()
 
-wordlist = ['laying', 'sit_on_the_floor']
 
 def activity_counter(activities: list) -> int:
     count_laying = activities.count('laying')
-    count_sit = activities.count('sit_on_the_floor')
+    count_sit = activities.count('sit_foor')
 
     return count_laying, count_sit
 
+
 def client_handler(client, addr):
+	event_count = 0
 	while True:
 		try:
 			data = client.recv(BUFFER_SIZE)
@@ -61,41 +63,40 @@ def client_handler(client, addr):
 		print(f"\n [Message from {addr[0]}] : {msg} \n")
 
 		# Add message to list for count activity
-		if msg in wordlist:
-			message_stack.append(msg)
+		# receive message per seconds
+		# detect 7 frame per 1 senconds
+		# 60 s = 420 frame
+		q_message = MyQueue(210)
 
-		activity_list = list()
-		if len(message_stack) == 9_000:
-			activity_list = message_stack.copy()
-			message_stack.clear()
+		if msg is not None:
+			activity_list = q_message.push_q(msg)
+			event_count += 1
 
-		laying, sit_on_the_floor = activity_counter(activity_list)
+		print(f"\n [Debug 1] : queue length = {len(activity_list)} \n")
+		print(f"\n [Debug 2] : event count = {event_count} \n")
 
-		# Send to line or Remove all elements
-		if laying >= 5_400 or sit_on_the_floor >= 5_400:
-			# Send message to line
-			if laying > sit_on_the_floor:
-				# _ = lineNotify(str(addr[0]) + " : laying")
-				t1 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : laying",))
-				t1.start()
+		if event_count == 35:	# 5 seconds
+			laying, sit_on_the_floor = activity_counter(activity_list)
 
-				client.send(bytes("Send to Line Success!", encoding='utf-8'))
-			else:
-				# _ = lineNotify(str(addr[0]) + " : sit on the floor")
-				t2 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : sit on the floor",))
-				t2.start()
+			if laying >= 24 or sit_on_the_floor >= 24:
+				# Send message to line
+				if laying > sit_on_the_floor:
+					# _ = lineNotify(str(addr[0]) + " : laying")
+					t1 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : laying",))
+					t1.start()
 
-				client.send(bytes("Send to Line Success!", encoding='utf-8'))
+					client.send(bytes("Send to Line Success!", encoding='utf-8'))
+				else:
+					# _ = lineNotify(str(addr[0]) + " : sit on the floor")
+					t2 = threading.Thread(target=lineNotify, args=(str(addr[0]) + " : sit on the floor",))
+					t2.start()
 
-			activity_list.clear()
-			laying = 0
-			sit_on_the_floor = 0
-		else:
-			if len(activity_list) == 9_000:
-				# Reset activity count
-				activity_list.clear()
+					client.send(bytes("Send to Line Success!", encoding='utf-8'))
+
+				# Reset
 				laying = 0
 				sit_on_the_floor = 0
+			event_count = 0
 
 		# Ping Pong
 		ping_broadcast = "!Ahoy"

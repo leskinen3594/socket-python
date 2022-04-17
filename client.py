@@ -72,12 +72,12 @@ import time
 try:
 	while True:
 		# message = input("[Send message] : ")
-		message = random.choice(['sit_on_the_floor'])
+		message = random.choice(['sit_foor'])
 
 		success = sender(message)
 
 		# time.sleep(.00002)	# 0.02 ms
-		time.sleep(.25)
+		time.sleep(.14)	# 140 ms
 
 		if not success:
 			print("\n [FAILED!] Cannot send message \n")
