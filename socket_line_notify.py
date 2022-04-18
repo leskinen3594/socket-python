@@ -39,10 +39,11 @@ client_list = list()	# Client List
 
 
 def activity_counter(activities: list) -> int:
-    count_laying = activities.count('laying')
-    count_sit = activities.count('sit_foor')
+	# print(f"\n [Debug 4] : activities = {activities} \n")
+	count_laying = activities.count('laying')
+	count_sit = activities.count('sit_foor')
 
-    return count_laying, count_sit
+	return count_laying, count_sit
 
 
 def client_handler(client, addr):
@@ -66,17 +67,22 @@ def client_handler(client, addr):
 		# receive message per seconds
 		# detect 7 frame per 1 senconds
 		# 60 s = 420 frame
-		q_message = MyQueue(210)
+		# Queue max length default = 100
+		q_length = 50
+		q_message = MyQueue(q_length)
 
 		if msg is not None:
 			activity_list = q_message.push_q(msg)
-			event_count += 1
+
+			if len(activity_list) >= q_length:
+				event_count += 1
 
 		# print(f"\n [Debug 1] : queue length = {len(activity_list)} \n")
 		# print(f"\n [Debug 2] : event count = {event_count} \n")
+		# print(f"\n [Debug 3] : queue = {activity_list} \n")
 
 		if event_count == 35:	# 5 seconds
-			laying, sit_on_the_floor = activity_counter(activity_list)
+			laying, sit_on_the_floor = activity_counter(activity_list[15:50])	# last 35 messages
 
 			if laying >= 24 or sit_on_the_floor >= 24:
 				# Send message to line
